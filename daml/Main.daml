@@ -1,0 +1,23 @@
+module Main where
+
+import Daml.Script
+
+template Account
+  with
+    admin : Party
+    accountHolder : Party
+
+  where
+    signatory admin, accountHolder
+
+
+main : Script ()
+main = do
+  a <- allocateParty "alice"
+  b <- allocateParty "bob"
+  uid <- validateUserId "alice"
+  createUser (User uid None) [CanActAs a, CanActAs b]
+
+  submitUser uid $ createCmd $ Account a b
+
+  pure ()
